@@ -18,13 +18,12 @@ import com.clean.cryptowallet.ui.mining.MiningScreen
 import com.clean.cryptowallet.ui.mining.MiningViewModel
 import com.clean.cryptowallet.ui.payment.PaymentScreen
 import com.clean.cryptowallet.ui.payment.PaymentViewModel
-import com.clean.cryptowallet.ui.admin.RewardScreen
-import com.clean.cryptowallet.ui.trading.TradingScreen // नई ट्रेडिंग स्क्रीन इम्पोर्ट हो गई!
+import com.clean.cryptowallet.ui.trading.TradingScreen
+import com.clean.cryptowallet.ui.profile.ProfileScreen // हमारी नई प्रोफाइल स्क्रीन इम्पोर्ट हो गई!
 
 @RequiresApi(Build.VERSION_CODES.M)
 @Composable
 fun DashboardContainer() {
-    // अब हमारे पास कुल 5 मुख्य स्क्रीन हैं, इसलिए डिफॉल्ट इंडेक्स 0 (Wallet) रखा है
     var currentTab by remember { mutableStateOf(0) }
     val context = LocalContext.current
 
@@ -39,8 +38,8 @@ fun DashboardContainer() {
                 tonalElevation = 8.dp,
                 modifier = Modifier.height(70.dp)
             ) {
-                // हमारे बट नेटवर्क (Butt Network) के सभी 5 पावरफुल फीचर्स की लिस्ट
-                val items = listOf("Wallet", "Mining", "ButtPay", "Rewards", "Trading")
+                // बट नेटवर्क (Butt Network) के सभी 5 कोर पिलर्स
+                val items = listOf("Wallet", "Mining", "ButtPay", "Trading", "Profile")
                 
                 items.forEachIndexed { index, label ->
                     NavigationBarItem(
@@ -53,7 +52,7 @@ fun DashboardContainer() {
                                 color = if (currentTab == index) Color(0xFF0EA5E9) else Color(0xFF64748B)
                             ) 
                         },
-                        icon = { }, // कस्टम आइकन्स आप बाद में लगा सकते हैं
+                        icon = { }, 
                         colors = NavigationBarItemDefaults.colors(
                             indicatorColor = Color(0xFF0EA5E9).copy(alpha = 0.15f)
                         )
@@ -72,8 +71,8 @@ fun DashboardContainer() {
                 0 -> WalletScreen(viewModel = walletViewModel)
                 1 -> MiningScreen(viewModel = miningViewModel)
                 2 -> PaymentScreen(viewModel = paymentViewModel)
-                3 -> RewardScreen(context = context)
-                4 -> TradingScreen() // यहाँ हमारा स्वैपिंग और ट्रेडिंग हब लिंक हो गया!
+                3 -> TradingScreen()
+                4 -> ProfileScreen() // प्रोफाइल हब पूरी तरह लिंक हो गया भाई!
             }
         }
     }
