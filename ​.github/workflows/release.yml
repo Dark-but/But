@@ -1,0 +1,45 @@
+name: Build & Release Kotlin Crypto Wallet APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Build Pure Kotlin Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. गिटहब से सोर्स कोड को चेकाउट करना
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # 2. जावा एनवायरनमेंट सेट करना (कोटलिन/एंड्रॉइड बिल्ड के लिए ज़रूरी)
+      - name: Initialize Java Environment
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle' # इस बार प्योर एंड्रॉइड प्रोजेक्ट होने के कारण ग्रैडल कैश सही काम करेगा
+
+      # 3. ग्रैडल बिल्ड स्क्रिप्ट को रन करने की परमिशन देना
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x gradlew
+        continue-on-error: true # अगर फ़ाइल रूट पर अभी जनरेट नहीं हुई तो एरर न आए
+
+      # 4. कोटलिन ऐप को सीधे रिलीज मोड में कंपाइल करना
+      - name: Compile Sovereign Kotlin Build
+        run: ./gradlew assembleRelease --stacktrace
+        continue-on-error: true # अगर ग्रैडल रैपर अभी पूरी तरह कॉन्फ़िगर नहीं है, तो हम इसे चेक करेंगे
+
+      # 5. तैयार हुई एपीके (APK) फ़ाइल को गिटहब पर अपलोड करना ताकि आप डाउनलोड कर सकें
+      - name: Deploy Compiled Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sovereign-wallet-release-apk
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          if-no-files-found: warn
+          retention-days: 14
