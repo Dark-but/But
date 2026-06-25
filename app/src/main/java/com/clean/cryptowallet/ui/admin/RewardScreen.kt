@@ -1,5 +1,6 @@
 package com.clean.cryptowallet.ui.admin
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -11,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.clean.cryptowallet.data.admin.AdminConfig
@@ -20,7 +20,7 @@ import com.clean.cryptowallet.data.security.SecureStorageManager
 
 @RequiresApi(Build.VERSION_CODES.M)
 @Composable
-fun RewardScreen(context: android.content.Context) {
+fun RewardScreen(context: Context) {
     val secureStorage = remember { SecureStorageManager(context) }
     val rewardEngine = remember { AdminRewardEngine(secureStorage) }
     val state by rewardEngine.rewardState.collectAsState()
@@ -97,7 +97,7 @@ fun RewardScreen(context: android.content.Context) {
                 }
             }
 
-            // एडमिन ट्रांसपेरेंसी कार्ड (फीस कहाँ जाएगी)
+            // एडमिन ट्रांसपेरेंसी कार्ड
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF020617)),
@@ -111,10 +111,9 @@ fun RewardScreen(context: android.content.Context) {
                     Text(
                         text = "Every ButtPay Peer-to-Peer transfer incurs a fixed ${state.currentAdminFeeRate * 100}% service fee. This fee is automatically routed to the decentralized master address for ecosystem stability.",
                         color = Color(0xFF64748B),
-                        fontSize = 11.sp,
-                        textAlign = TextAlign.Justify
+                        fontSize = 11.sp
                     )
-                    Divider(color = Color(0xFF1E293B), modifier = Modifier.padding(vertical = 4.dp))
+                    HorizontalDivider(color = Color(0xFF1E293B), modifier = Modifier.padding(vertical = 4.dp))
                     Text(
                         text = "Admin Target Vault:\n${AdminConfig.ADMIN_WALLET_ADDRESS}",
                         color = Color(0xFF94A3B8),
