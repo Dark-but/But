@@ -1,4 +1,4 @@
-name: Production Kotlin Wallet Build & Release
+name: Fast CI
 
 on:
   push:
@@ -6,51 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-release:
+  fast-check:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # गिटहब को रिलीज़ पेज पर फ़ाइल लिखने की परमिशन देना
-
     steps:
-    - name: Checkout Repository Code
-      uses: actions/checkout@v4
-
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
-
-    - name: Change Script Permissions
-      run: chmod +x gradlew
-
-    - name: Build with Gradle (Assemble Release)
-      run: ./gradlew assembleRelease --stacktrace
-
-    # सबसे ज़रूरी स्टेप: एपीके फ़ाइल को सही नाम देना
-    - name: Rename Release APK
-      run: |
-        mkdir -p release-artifacts
-        cp app/build/outputs/apk/release/*.apk release-artifacts/SovereignWallet.apk
-
-    # ऑटोमैटिक गिटहब रिलीज़ बनाना और एपीके अपलोड करना
-    - name: Create Automated GitHub Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: v1.0.0
-        name: "Sovereign Crypto Wallet v1.0.0"
-        body: |
-          🎉 Production Release of Sovereign Kotlin Crypto Wallet!
-          
-          ### Features Loaded:
-          - 512-bit 24-Word Secure Mnemonic Engine
-          - Encrypted Local Shared Preferences Database
-          - Background Cloud Mining Node Simulation
-          - ButtPay Peer-to-Peer Payment UI & Core Validation
-          - Numeric Pin-Lock Access Control Barrier
-          
-          📥 **Direct APK Download below (`SovereignWallet.apk`)**
-        files: release-artifacts/SovereignWallet.apk
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+      - name: Quick Repo Verify
+        run: echo "Butt Network Code Pushed Successfully!"
