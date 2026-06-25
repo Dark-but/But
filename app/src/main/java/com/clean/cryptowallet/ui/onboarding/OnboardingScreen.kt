@@ -13,21 +13,37 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.clean.cryptowallet.data.security.SecureStorageManager
+import com.clean.cryptowallet.data.security.PinSecurityEngine
 import com.clean.cryptowallet.ui.dashboard.DashboardContainer
+import com.clean.cryptowallet.ui.security.AppLockScreen
 
 @RequiresApi(Build.VERSION_CODES.M)
 @Composable
 fun OnboardingScreen(viewModel: OnboardingViewModel = viewModel()) {
     val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    
+    val secureStorage = remember { SecureStorageManager(context) }
+    val pinEngine = remember { PinSecurityEngine(secureStorage) }
+    
+    // अगर वॉलेट पुराना है, तो शुरुआत में ऐप लॉक्ड रहेगा (isAppUnlocked = false)
+    var isAppUnlocked by remember { mutableStateOf(!state.isWalletActive) }
 
-    // अगर वॉलेट पहले से सक्रिय है या सक्सेस हो गया है, तो सीधे मेन डैशबोर्ड दिखाओ
     if (state.isWalletActive) {
-        DashboardContainer()
+        if (isAppUnlocked) {
+            DashboardContainer()
+        } else {
+            AppLockScreen(pinEngine = pinEngine, onUnlockSuccess = {
+                isAppUnlocked = true
+            })
+        }
     } else {
         Box(
             modifier = Modifier
