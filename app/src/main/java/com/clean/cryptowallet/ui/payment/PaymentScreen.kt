@@ -24,7 +24,6 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
     var amountInput by remember { mutableStateOf("") }
     var txStatusMessage by remember { mutableStateOf("") }
 
-    // गैस फीस इंजन का सेटअप
     val gasEngine = remember { GasFeeEngine() }
     val gasOptions = remember { gasEngine.getGasFeeOptions() }
     var selectedGasTier by remember { mutableStateOf(GasSpeedTier.MEDIUM) }
@@ -46,14 +45,13 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             modifier = Modifier.padding(vertical = 4.dp)
         )
 
-        // ट्रांसफर कार्ड
         Card(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("Send SVC (Sovereign Coin)", color = Color.White, fontWeight = FontWeight.SemiBold)
+                Text("Send BUT (Butt Coin)", color = Color.White, fontWeight = FontWeight.SemiBold) // यहाँ अपडेट कर दिया
 
                 OutlinedTextField(
                     value = recipientAddress,
@@ -70,7 +68,7 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                 OutlinedTextField(
                     value = amountInput,
                     onValueChange = { amountInput = it },
-                    label = { Text("Amount (SVC)") },
+                    label = { Text("Amount (BUT)") }, // यहाँ अपडेट कर दिया
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFF0EA5E9),
                         unfocusedTextColor = Color.White,
@@ -81,7 +79,6 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             }
         }
 
-        // [गैस फीस बूस्टर] - लाइव स्पीड कस्टमाइजेशन कार्ड
         Card(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
@@ -94,13 +91,7 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                     fontWeight = FontWeight.Bold, 
                     fontSize = 14.sp
                 )
-                Text(
-                    text = "Higher gas fee ensures faster transaction processing on the nodes.",
-                    color = Color(0xFF64748B),
-                    fontSize = 11.sp
-                )
 
-                // 3 कैप्सूल बटन्स की रो
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     gasOptions.forEach { option ->
                         val isSelected = selectedGasTier == option.tier
@@ -112,7 +103,6 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                                     color = if (isSelected) Color(0xFF0EA5E9).copy(alpha = 0.2f) else Color(0xFF020617),
                                     shape = RoundedCornerShape(8.dp)
                                 )
-                                .background(Color.Transparent)
                                 .clickable { selectedGasTier = option.tier }
                                 .padding(4.dp),
                             contentAlignment = Alignment.Center
@@ -125,7 +115,7 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                                     fontSize = 12.sp
                                 )
                                 Text(
-                                    text = "${option.feeInSvc} SVC", 
+                                    text = "${option.feeInBut} BUT", // यहाँ अपडेट कर दिया
                                     color = Color(option.displayColorHex), 
                                     fontSize = 11.sp
                                 )
@@ -136,7 +126,6 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             }
         }
 
-        // समरी और सेंड बटन
         Card(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF020617)),
@@ -149,15 +138,14 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             ) {
                 Column {
                     Text("Selected Speed: ${currentSelectedGas.speedLabel}", color = Color(0xFF94A3B8), fontSize = 12.sp)
-                    Text("Network Fee: ${currentSelectedGas.feeInSvc} SVC", color = Color(0xFF38BDF8), fontSize = 12.sp)
+                    Text("Network Fee: ${currentSelectedGas.feeInBut} BUT", color = Color(0xFF38BDF8), fontSize = 12.sp) // यहाँ अपडेट कर दिया
                 }
 
                 Button(
                     onClick = {
                         val amt = amountInput.toDoubleOrNull() ?: 0.0
                         if (recipientAddress.isNotBlank() && amt > 0) {
-                            // ट्रांसफर एक्सीक्यूशन + गैस फीस डिडक्शन
-                            txStatusMessage = "Transaction broadcasted! Speed: ${currentSelectedGas.speedLabel}. Fee Deducted: ${currentSelectedGas.feeInSvc} SVC"
+                            txStatusMessage = "Transaction broadcasted! Speed: ${currentSelectedGas.speedLabel}. Fee Deducted: ${currentSelectedGas.feeInBut} BUT"
                             recipientAddress = ""
                             amountInput = ""
                         } else {
@@ -184,6 +172,5 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
     }
 }
 
-// कंपोज़ेबल क्लिकेबल हेल्पर ताकि गिटहब कंपाइलर में एम्बिग्यूइटी एरर न आये
 private fun Modifier.clickable(onClick: () -> Unit): Modifier = this.then(Modifier.background(Color.Transparent).shortClick(onClick))
 @Composable private fun Modifier.shortClick(onClick: () -> Unit) = androidx.compose.foundation.clickable(onClick = onClick)
