@@ -19,6 +19,8 @@ import com.clean.cryptowallet.data.payment.AdvancedCryptoEngine
 import com.clean.cryptowallet.data.payment.AddressSecurityStatus
 import com.clean.cryptowallet.data.payment.GasFeeEngine
 import com.clean.cryptowallet.data.payment.GasSpeedTier
+import com.clean.cryptowallet.data.network.OnlineNetworkEngine
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.M)
 @Composable
@@ -28,26 +30,29 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
     var customGasInput by remember { mutableStateOf("") }
     var isCustomGasEnabled by remember { mutableStateOf(false) }
     var txStatusMessage by remember { mutableStateOf("") }
+    
+    // लाइव वेबसॉकेट प्रोग्रेस स्ट्रीम ट्रैकर
+    var liveStreamStatus by remember { mutableStateOf("Network Idle") }
 
     val gasEngine = remember { GasFeeEngine() }
     val advancedEngine = remember { AdvancedCryptoEngine() }
+    val networkEngine = remember { OnlineNetworkEngine() }
+    val coroutineScope = rememberCoroutineScope()
     
     val gasOptions = remember { gasEngine.getGasFeeOptions() }
     var selectedGasTier by remember { mutableStateOf(GasSpeedTier.MEDIUM) }
 
-    // लाइव एंटी-स्कैम ऑडिट स्टेट
     val securityStatus = advancedEngine.auditTargetAddress(recipientAddress)
     val currentSelectedGas = gasOptions.first { it.tier == selectedGasTier }
     
-    // फीस का अंतिम कैलकुलेशन (फिक्स या कस्टम मैनुअल)
     val finalGasFee = if (isCustomGasEnabled) {
         advancedEngine.validateCustomGas(customGasInput)
     } else {
         currentSelectedGas.feeInBut
     }
 
-    // डमी वॉलेट बैलेंस स्टेट सिमुलेशन के लिए
     val walletState = remember { object { val buttBalance = 2500.0 } }
+    val activeRpcNode = remember { networkEngine.getActiveRouteNode() }
 
     Column(
         modifier = Modifier
@@ -56,13 +61,22 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Text(
-            text = "ButtPay Sovereign Transfer Terminal",
-            color = Color.White,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(vertical = 2.dp)
-        )
+        // हेडर और लाइव नोड फ़ॉलकॉक इंडिकेटर
+        Column {
+            Text(
+                text = "ButtPay Sovereign Transfer Terminal",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "🛰️ Routed via Fallback Node: $activeRpcNode",
+                color = Color(0xFF38BDF8),
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(top = 2.dp)
+            )
+        }
 
         // 1. लाइव सुरक्षा कवच (Anti-Dust & Fraud Alert Banner)
         if (recipientAddress.isNotBlank()) {
@@ -115,7 +129,6 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     
-                    // वन-टैप कैमरा QR स्कैनर सिमुलेटर बटन
                     Button(
                         onClick = {
                             recipientAddress = "0x7a8b9c6d5e4f3g2h1i0j_ScannedViaButtScanner"
@@ -228,25 +241,27 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                             recipientAddress.isBlank() || amt <= 0 -> {
                                 txStatusMessage = "Error: Invalid parameters mapped."
                             }
-                            // Butt नियम 1: UTXO चेक
                             !consensus.verifyInputsValue(mockInputsSum, amt, finalGasFee) -> {
                                 txStatusMessage = "Butt Network Reject: Insufficient UTXO Inputs! (Rule #1 Failed)"
                             }
-                            // Butt नियम 2: डबल स्पेंड चेक
                             !consensus.checkDoubleSpend("tx_demo_id", spentOutputsPool) -> {
                                 txStatusMessage = "Butt Network Reject: Double-Spending Detected! (Rule #2 Failed)"
                             }
-                            // Butt नियम 4: क्रिप्टोग्राफिक सिग्नेचर चेक
                             !isSignatureValid -> {
                                 txStatusMessage = "Butt Network Reject: Bad Cryptographic Signature! (Rule #4 Failed)"
                             }
-                            // एंटी-स्कैम ब्लैकलिस्ट सुरक्षा ब्लॉक
                             securityStatus == AddressSecurityStatus.SUSPICIOUS -> {
                                 txStatusMessage = "Butt Network Reject: Safeguard Blocked Suspicious Node!"
                             }
-                            // सभी नियम पास होने पर सफल ऑनलाइन ट्रांसफर
                             else -> {
-                                txStatusMessage = "Butt Network Consensus PASSED. Transaction broadcasted securely to online ledger!"
+                                txStatusMessage = "Butt Network Consensus PASSED. Broadcasted to Node!"
+                                
+                                // लाइव वेबसॉकेट मेमपूल मॉनिटर को एक्टिवेट करना
+                                coroutineScope.launch {
+                                    networkEngine.streamMempoolConfirmations().collect { status ->
+                                        liveStreamStatus = status
+                                    }
+                                }
                                 recipientAddress = ""
                                 amountInput = ""
                             }
@@ -262,19 +277,29 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             }
         }
 
-        // लाइव कंसोल रिस्पांस मेसेज
+        // 5. लाइव वेबसॉकेट मेमपूल कंसोल ट्रैकर डिस्प्ले बोर्ड
+        Card(
+            shape = RoundedCornerShape(8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF020617)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(10.dp)) {
+                Text("📡 Real-time Mempool Web Socket Stream:", color = Color(0xFF64748B), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                Text(text = liveStreamStatus, color = if (liveStreamStatus.contains("Success")) Color(0xFF10B981) else Color(0xFFF59E0B), fontSize = 12.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 2.dp))
+            }
+        }
+
         if (txStatusMessage.isNotEmpty()) {
             Text(
                 text = txStatusMessage,
                 color = if (txStatusMessage.contains("Reject") || txStatusMessage.startsWith("Error")) Color(0xFFEF4444) else Color(0xFF10B981),
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 2.dp)
             )
         }
     }
 }
 
-// थ्रेड-सेफ और क्लीन क्लिक मॉडिफायर एक्सटेंशन
 private fun Modifier.clickable(onClick: () -> Unit): Modifier = this.then(Modifier.background(Color.Transparent).shortClick(onClick))
 @Composable private fun Modifier.shortClick(onClick: () -> Unit) = androidx.compose.foundation.clickable(onClick = onClick)
