@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.clean.cryptowallet.data.crypto.ButtConsensusRules
 import com.clean.cryptowallet.data.payment.AdvancedCryptoEngine
 import com.clean.cryptowallet.data.payment.AddressSecurityStatus
 import com.clean.cryptowallet.data.payment.GasFeeEngine
@@ -45,6 +46,9 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
         currentSelectedGas.feeInBut
     }
 
+    // डमी वॉलेट बैलेंस स्टेट सिमुलेशन के लिए
+    val walletState = remember { object { val buttBalance = 2500.0 } }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,7 +64,7 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             modifier = Modifier.padding(vertical = 2.dp)
         )
 
-        // ADVANCED FEATURE: लाइव सिक्योरिटी सेफगार्ड शील्ड बैनर
+        // 1. लाइव सुरक्षा कवच (Anti-Dust & Fraud Alert Banner)
         if (recipientAddress.isNotBlank()) {
             Card(
                 shape = RoundedCornerShape(8.dp),
@@ -92,7 +96,7 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             }
         }
 
-        // मुख्य ट्रांसफर कार्ड + QR स्कैनर इंटीग्रेटेड हब
+        // 2. मुख्य ट्रांसफर कार्ड + वन-टैप QR स्कैनर हब
         Card(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
@@ -111,7 +115,7 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     
-                    // ADVANCED FEATURE: वन-टैप कैमरा QR स्कैनर सिम्युलेटर बटन
+                    // वन-टैप कैमरा QR स्कैनर सिमुलेटर बटन
                     Button(
                         onClick = {
                             recipientAddress = "0x7a8b9c6d5e4f3g2h1i0j_ScannedViaButtScanner"
@@ -135,7 +139,7 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             }
         }
 
-        // ADVANCED FEATURE: गैस फीस टियर + मैनुअल कस्टम स्लाइडर लिमिट इनपुट
+        // 3. गैस फीस कस्टमाइज़र (बूस्टर टियर्स और प्रो-ट्रेडर मैनुअल इनपुट)
         Card(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
@@ -145,7 +149,6 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text("Gas Fee Booster Configuration", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     
-                    // मैनुअल कस्टमाइज टॉगल बटन
                     Text(
                         text = if (isCustomGasEnabled) "Switch to Preset" else "Set Custom",
                         color = Color(0xFF0EA5E9),
@@ -156,7 +159,6 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                 }
 
                 if (!isCustomGasEnabled) {
-                    // फिक्स टियर बटन्स की रो
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         gasOptions.forEach { option ->
                             val isSelected = selectedGasTier == option.tier
@@ -180,7 +182,6 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                         }
                     }
                 } else {
-                    // प्रो-ट्रेडर मैनुअल गैस इनपुट बॉक्स
                     OutlinedTextField(
                         value = customGasInput,
                         onValueChange = { customGasInput = it },
@@ -193,7 +194,7 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             }
         }
 
-        // समरी और ब्रॉडकास्ट इंजन
+        // 4. समरी और वाइट-लेबल्ड कंसेंसस ब्रॉडकास्ट इंजन
         Card(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF020617)),
@@ -212,16 +213,43 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
                 Button(
                     onClick = {
                         val amt = amountInput.toDoubleOrNull() ?: 0.0
-                        if (recipientAddress.isNotBlank() && amt > 0) {
-                            if (securityStatus == AddressSecurityStatus.SUSPICIOUS) {
-                                txStatusMessage = "Transaction REJECTED by local safeguard guard shield. Suspected Dust Attack!"
-                            } else {
-                                txStatusMessage = "Broadcast Successful! Sent $amt BUT. Total Fees Burnt: $finalGasFee BUT."
+                        val consensus = ButtConsensusRules()
+                        
+                        val spentOutputsPool = hashSetOf("tx_9988", "tx_5544") 
+                        val mockInputsSum = walletState.buttBalance 
+                        
+                        val isSignatureValid = consensus.verifyDigitalSignature(
+                            publicKey = "0x_Sovereign_Pub_Key", 
+                            message = "Send_$amt", 
+                            signature = "USER_SIGNED_WITH_PRIVATE_KEY_VALID_BUTT_NETWORK_SIG"
+                        )
+
+                        when {
+                            recipientAddress.isBlank() || amt <= 0 -> {
+                                txStatusMessage = "Error: Invalid parameters mapped."
+                            }
+                            // Butt नियम 1: UTXO चेक
+                            !consensus.verifyInputsValue(mockInputsSum, amt, finalGasFee) -> {
+                                txStatusMessage = "Butt Network Reject: Insufficient UTXO Inputs! (Rule #1 Failed)"
+                            }
+                            // Butt नियम 2: डबल स्पेंड चेक
+                            !consensus.checkDoubleSpend("tx_demo_id", spentOutputsPool) -> {
+                                txStatusMessage = "Butt Network Reject: Double-Spending Detected! (Rule #2 Failed)"
+                            }
+                            // Butt नियम 4: क्रिप्टोग्राफिक सिग्नेचर चेक
+                            !isSignatureValid -> {
+                                txStatusMessage = "Butt Network Reject: Bad Cryptographic Signature! (Rule #4 Failed)"
+                            }
+                            // एंटी-स्कैम ब्लैकलिस्ट सुरक्षा ब्लॉक
+                            securityStatus == AddressSecurityStatus.SUSPICIOUS -> {
+                                txStatusMessage = "Butt Network Reject: Safeguard Blocked Suspicious Node!"
+                            }
+                            // सभी नियम पास होने पर सफल ऑनलाइन ट्रांसफर
+                            else -> {
+                                txStatusMessage = "Butt Network Consensus PASSED. Transaction broadcasted securely to online ledger!"
                                 recipientAddress = ""
                                 amountInput = ""
                             }
-                        } else {
-                            txStatusMessage = "Please fill in valid parameters."
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -234,10 +262,11 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
             }
         }
 
+        // लाइव कंसोल रिस्पांस मेसेज
         if (txStatusMessage.isNotEmpty()) {
             Text(
                 text = txStatusMessage,
-                color = if (txStatusMessage.contains("REJECTED") || txStatusMessage.startsWith("Please")) Color(0xFFEF4444) else Color(0xFF10B981),
+                color = if (txStatusMessage.contains("Reject") || txStatusMessage.startsWith("Error")) Color(0xFFEF4444) else Color(0xFF10B981),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(top = 4.dp)
@@ -246,5 +275,6 @@ fun PaymentScreen(viewModel: PaymentViewModel) {
     }
 }
 
+// थ्रेड-सेफ और क्लीन क्लिक मॉडिफायर एक्सटेंशन
 private fun Modifier.clickable(onClick: () -> Unit): Modifier = this.then(Modifier.background(Color.Transparent).shortClick(onClick))
 @Composable private fun Modifier.shortClick(onClick: () -> Unit) = androidx.compose.foundation.clickable(onClick = onClick)
