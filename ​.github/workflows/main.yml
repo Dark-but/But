@@ -10,34 +10,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    # 1. कोड चेकआउट करना
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # 2. जावा सेटअप (फ्लटर के लिए जरूरी)
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    # 3. ऑफिशियल फ्लटर एनवायरनमेंट सेटअप करना
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable' # यह फ्लटर का सबसे स्टेबल वर्जन डाउनलोड करेगा
+        channel: 'stable'
 
-    # 4. फ्लटर की डिपेंडेंसीज गेट करना (बिना ग्रैडल एरर के)
     - name: Install Dependencies
       run: flutter pub get
 
-    # 5. कड़क और फ्रेश रिलीज APK बिल्ड करना (फ्लटर का अपना जादुई कमांड)
+    # नाम का चक्कर खत्म करने के लिए डायरेक्ट फ्लटर का कमांड
     - name: Build Release APK
       run: flutter build apk --release
 
-    # 6. बनी हुई APK को डाउनलोड के लिए डिप्लॉय करना
+    # यहाँ हमने नाम हटाकर सिर्फ स्टार (*) लगा दिया है, जो भी नाम होगा यह उसे ढूंढ लेगा
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Sovereign-Wallet-Build
-        path: build/app/outputs/flutter-apk/app-release.apk
+        name: Yieye-Network-Release-APK
+        path: build/app/outputs/flutter-apk/*.apk
