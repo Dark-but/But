@@ -1,18 +1,16 @@
-name: Production Kotlin Wallet Build
-
-on:
+name: Build and Deploy APK
+on: 
   push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Repository Code
+    - name: Checkout Code
       uses: actions/checkout@v4
 
     - name: Set up JDK 17
@@ -20,19 +18,17 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
 
-    - name: Validate Gradle Wrapper
-      uses: gradle/wrapper-validation-action@v2
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: 8.5
 
-    - name: Change Script Permissions
-      run: chmod +x gradlew
+    - name: Build Release APK
+      run: gradle assembleRelease --no-daemon --stacktrace
 
-    - name: Build with Gradle (Assemble Release)
-      run: ./gradlew assembleRelease --stacktrace
-
-    - name: Upload Cryptographic Digital Artifact
+    - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: SovereignKotlinWallet
+        name: Sovereign-Wallet-Build
         path: app/build/outputs/apk/release/*.apk
