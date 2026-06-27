@@ -1,28 +1,11 @@
 plugins {
     id "com.android.application"
+    id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
-}
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
 android {
-    namespace "com.example.but" // 👈 आपका पैकेज नाम
+    namespace "com.example.but"
     compileSdk 34
 
     compileOptions {
@@ -30,25 +13,15 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
     defaultConfig {
-        applicationId "com.example.but" // 👈 ऐप आईडी
+        applicationId "com.example.but"
         minSdk 21
         targetSdk 34
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
-    }
-
-    buildTypes {
-        release {
-            signingConfig signingConfigs.debug // रिलीज़ की कीज़ बाद में यहाँ सेटअप कर सकते हो
-            minifyEnabled false
-            shrinkResources false
-        }
+        versionCode 1
+        versionName "1.0.0"
     }
 }
-
-flutter {
-    source '../..'
-}
-
-dependencies {}
