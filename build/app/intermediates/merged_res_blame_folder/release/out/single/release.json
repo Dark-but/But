@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.but.network.app-merged_res-33:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.but.network.app-main-27:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.but.network.app-merged_res-33:/layout_activity_main.xml.flat",
+        "source": "com.but.network.app-main-27:/layout/activity_main.xml"
+    }
+]
