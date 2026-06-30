@@ -70,14 +70,14 @@ fun WelcomeLayout(viewModel: OnboardingViewModel) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Butt Network",
+            text = "But Network",
             color = Color.White,
             fontSize = 32.sp,
             fontWeight = FontWeight.Black,
             textAlign = TextAlign.Center
         )
         Text(
-            text = "Decentralized Sovereign Gateway",
+            text = "Secure • Anonymous • Utility Suite",
             color = Color(0xFF38BDF8),
             fontSize = 14.sp,
             modifier = Modifier.padding(top = 8.dp, bottom = 48.dp)

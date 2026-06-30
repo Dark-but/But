@@ -12,10 +12,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('BUT Network'),
+          title: const Text('But Network'),
         ),
         body: const Center(
-          child: Text('Welcome to BUT Network App'),
+          child: Text('Welcome to But Network - v2.0'),
         ),
       ),
     );

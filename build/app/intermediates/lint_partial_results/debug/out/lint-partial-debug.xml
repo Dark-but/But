@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.1.0" type="partial_results">
+    <map id="UnsafeIntentLaunch">
+            <map id="unprotected">
+                <entry
+                    name="com.but.network.MainActivity"
+                    boolean="true"/>
+            </map>
+    </map>
+    <map id="UnusedResources">
+        <entry
+            name="model"
+            string="id[title(D),subtitle(D)],layout[activity_main(U)],mipmap[ic_launcher(U)],style[ButTheme(U),Theme_Material3_DayNight_NoActionBar(R)];4^5;;;"/>
+    </map>
+
+</incidents>

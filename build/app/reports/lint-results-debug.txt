@@ -1,0 +1,125 @@
+/workspaces/But/android/app/build.gradle:33: Warning: A newer version of androidx.core:core-ktx than 1.13.1 is available: 1.19.0 [GradleDependency]
+    implementation "androidx.core:core-ktx:1.13.1"
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspaces/But/android/app/build.gradle:34: Warning: A newer version of androidx.appcompat:appcompat than 1.6.1 is available: 1.7.1 [GradleDependency]
+    implementation "androidx.appcompat:appcompat:1.6.1"
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspaces/But/android/app/build.gradle:35: Warning: A newer version of com.google.android.material:material than 1.12.0 is available: 1.14.0 [GradleDependency]
+    implementation "com.google.android.material:material:1.12.0"
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "GradleDependency":
+   This detector looks for usages of libraries where the version you are using
+   is not the current stable release. Using older versions is fine, and there
+   are cases where you deliberately want to stick with an older version.
+   However, you may simply not be aware that a more recent version is
+   available, and that is what this lint check helps find.
+
+/workspaces/But/android/app/src/main/AndroidManifest.xml:19: Warning: Expecting android:screenOrientation="unspecified" or "fullSensor" for this activity so the user can use the application in any orientation and provide a great experience on Chrome OS devices [LockedOrientationActivity]
+            android:screenOrientation="portrait"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "LockedOrientationActivity":
+   The <activity> element should not be locked to any orientation so that
+   users can take advantage of the multi-window environments and larger
+   screens available on Android. To fix the issue, consider declaring the
+   corresponding activity element with `screenOrientation="unspecified"or
+   "fullSensor"` attribute.
+
+   https://developer.android.com/topic/arc/window-management
+
+/workspaces/But/android/app/src/main/kotlin/com/but/network/security/SecurityGuard.kt:35: Warning: Using SERIAL to get device identifiers is not recommended [HardwareIds]
+    fun deriveWalletKey(seed: String): String = sha512Hex(seed + Build.SERIAL)
+                                                                       ~~~~~~
+
+   Explanation for issues of type "HardwareIds":
+   Using these device identifiers is not recommended other than for high value
+   fraud prevention and advanced telephony use-cases. For advertising
+   use-cases, use AdvertisingIdClient$Info#getId and for analytics, use
+   InstanceId#getId.
+
+   https://developer.android.com/training/articles/user-data-ids.html
+
+/workspaces/But/android/app/src/main/AndroidManifest.xml:11: Warning: The attribute android:allowBackup is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute android:dataExtractionRules specifying an @xml resource which configures cloud backups and device transfers on Android 12 and higher. [DataExtractionRules]
+        android:allowBackup="false"
+                             ~~~~~
+
+   Explanation for issues of type "DataExtractionRules":
+   Before Android 12, the attributes android:allowBackup and
+   android:fullBackupContent were used to configure all forms of backup,
+   including cloud backups, device-to-device transfers and adb backup.
+
+   In Android 12 and higher, these attributes have been deprecated and will
+   only apply to cloud backups. You should instead use the attribute
+   android:dataExtractionRules, specifying an @xml resource that configures
+   which files to back up, for cloud backups and for device-to-device
+   transfers, separately. If your minSdkVersion supports older versions,
+   you'll still want to specify an android:fullBackupContent resource if the
+   default behavior is not right for your app.
+
+   https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   https://goo.gle/DataExtractionRules
+
+/workspaces/But/android/app/src/main/res/layout/activity_main.xml:5: Warning: Possible overdraw: Root element paints background #000000 with a theme that also paints a background (inferred theme is @style/ButTheme) [Overdraw]
+    android:background="#000000"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "Overdraw":
+   If you set a background drawable on a root view, then you should use a
+   custom theme where the theme background is null. Otherwise, the theme
+   background will be painted first, only to have your custom background
+   completely cover it; this is called "overdraw".
+
+   NOTE: This detector relies on figuring out which layouts are associated
+   with which activities based on scanning the Java code, and it's currently
+   doing that using an inexact pattern matching algorithm. Therefore, it can
+   incorrectly conclude which activity the layout is associated with and then
+   wrongly complain that a background-theme is hidden.
+
+   If you want your custom background on multiple pages, then you should
+   consider making a custom theme with your custom background and just using
+   that theme instead of a root element background.
+
+   Of course it's possible that your custom drawable is translucent and you
+   want it to be mixed with the background. However, you will get better
+   performance if you pre-mix the background with your drawable and use that
+   resulting image or color as a custom theme background instead.
+
+/workspaces/But/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml:1: Warning: The application adaptive icon is missing a monochrome tag [MonochromeLauncherIcon]
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+^
+
+   Explanation for issues of type "MonochromeLauncherIcon":
+   If android:roundIcon and android:icon are both in your manifest, you must
+   either remove the reference to android:roundIcon if it is not needed; or,
+   supply the monochrome icon in the drawable defined by the android:roundIcon
+   and android:icon attribute.
+
+   For example, if android:roundIcon and android:icon are both in the
+   manifest, a launcher might choose to use android:roundIcon over
+   android:icon to display the adaptive app icon. Therefore, your themed
+   application iconwill not show if your monochrome attribute is not also
+   specified in android:roundIcon.
+
+/workspaces/But/android/app/src/main/res/layout/activity_main.xml:13: Warning: Hardcoded string "But Network v2.0", should use @string resource [HardcodedText]
+        android:text="But Network v2.0"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspaces/But/android/app/src/main/res/layout/activity_main.xml:23: Warning: Hardcoded string "1 But Coin = 100 Bytes", should use @string resource [HardcodedText]
+        android:text="1 But Coin = 100 Bytes"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "HardcodedText":
+   Hardcoding text attributes directly in layout files is bad for several
+   reasons:
+
+   * When creating configuration variations (for example for landscape or
+   portrait) you have to repeat the actual text (and keep it up to date when
+   making changes)
+
+   * The application cannot be translated to other languages by just adding
+   new translations for existing string resources.
+
+   There are quickfixes to automatically extract this hardcoded string into a
+   resource lookup.
+
+0 errors, 10 warnings

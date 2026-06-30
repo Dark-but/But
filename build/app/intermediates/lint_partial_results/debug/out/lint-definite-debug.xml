@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.1.0" type="incidents">
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;But Network v2.0&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="13"
+            column="9"
+            startOffset="435"
+            endLine="13"
+            endColumn="40"
+            endOffset="466"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;1 But Coin = 100 Bytes&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="23"
+            column="9"
+            startOffset="758"
+            endLine="23"
+            endColumn="46"
+            endOffset="795"/>
+    </incident>
+
+    <incident
+        id="MonochromeLauncherIcon"
+        severity="warning"
+        message="The application adaptive icon is missing a monochrome tag">
+        <location
+            file="${:app*debug*sourceProvider*0*resDir*0}/mipmap-anydpi-v26/ic_launcher.xml"
+            line="1"
+            column="1"
+            startOffset="0"
+            endLine="4"
+            endColumn="17"
+            endOffset="209"/>
+    </incident>
+
+    <incident
+        id="HardwareIds"
+        severity="warning"
+        message="Using `SERIAL` to get device identifiers is not recommended">
+        <location
+            file="${:app*debug*sourceProvider*0*javaDir*2}/com/but/network/security/SecurityGuard.kt"
+            line="35"
+            column="72"
+            startOffset="1106"
+            endLine="35"
+            endColumn="78"
+            endOffset="1112"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.core:core-ktx than 1.13.1 is available: 1.19.0">
+        <fix-replace
+            description="Change to 1.19.0"
+            family="Update versions"
+            oldString="1.13.1"
+            replacement="1.19.0"/>
+        <location
+            file="${:app*projectDir}/build.gradle"
+            line="33"
+            column="20"
+            startOffset="571"
+            endLine="33"
+            endColumn="51"
+            endOffset="602"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.appcompat:appcompat than 1.6.1 is available: 1.7.1">
+        <fix-replace
+            description="Change to 1.7.1"
+            family="Update versions"
+            oldString="1.6.1"
+            replacement="1.7.1"/>
+        <location
+            file="${:app*projectDir}/build.gradle"
+            line="34"
+            column="20"
+            startOffset="622"
+            endLine="34"
+            endColumn="56"
+            endOffset="658"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of com.google.android.material:material than 1.12.0 is available: 1.14.0">
+        <fix-replace
+            description="Change to 1.14.0"
+            family="Update versions"
+            oldString="1.12.0"
+            replacement="1.14.0"/>
+        <location
+            file="${:app*projectDir}/build.gradle"
+            line="35"
+            column="20"
+            startOffset="678"
+            endLine="35"
+            endColumn="65"
+            endOffset="723"/>
+    </incident>
+
+    <incident
+        id="Overdraw"
+        severity="warning"
+        message="Possible overdraw: Root element paints background `#000000` with a theme that also paints a background (inferred theme is `@style/ButTheme`)">
+        <location
+            file="${:app*debug*sourceProvider*0*resDir*0}/layout/activity_main.xml"
+            line="5"
+            column="5"
+            startOffset="197"
+            endLine="5"
+            endColumn="33"
+            endOffset="225"/>
+    </incident>
+
+</incidents>
